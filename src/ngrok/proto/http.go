@@ -56,7 +56,7 @@ func NewHttp() *Http {
 func extractBody(r io.Reader) ([]byte, io.ReadCloser, error) {
 	buf := new(bytes.Buffer)
 	//_, err := buf.ReadFrom(r)
-	defer r.Close()
+	//defer r.Close()
 	//return buf.Bytes(), ioutil.NopCloser(buf), err
 	return buf.Bytes(), nil, nil
 }
