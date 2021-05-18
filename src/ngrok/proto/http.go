@@ -14,6 +14,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"runtime/debug"
 
 	metrics "github.com/rcrowley/go-metrics"
 )
@@ -157,6 +158,7 @@ func (h *Http) readResponses(tee *conn.Tee, lastTxn chan *HttpTxn) {
 					}
 				}
 				wg.Done()
+				result.Reset()
 			}()
 
 			go func() {
@@ -171,9 +173,11 @@ func (h *Http) readResponses(tee *conn.Tee, lastTxn chan *HttpTxn) {
 					}
 				}
 				wg.Done()
+				result.Reset()
 			}()
 
 			wg.Wait()
+			debug.FreeOSMemory()
 			break
 		}
 	}
