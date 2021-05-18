@@ -9,7 +9,9 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"net/http"
 )
+import _ "net/http/pprof"
 
 func init() {
 	if runtime.GOOS == "windows" {
@@ -39,7 +41,11 @@ func Main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
+	
+	go func() {  
+        http.ListenAndServe("localhost:6060", nil)  
+    }()  
+	
 	// seed random number generator
 	seed, err := util.RandomSeed()
 	if err != nil {

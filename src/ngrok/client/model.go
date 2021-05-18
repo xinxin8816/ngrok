@@ -104,7 +104,8 @@ func newClientModel(config *Configuration, ctl mvc.Controller) *ClientModel {
 	// configure TLS
 	if config.TrustHostRootCerts {
 		m.Info("Trusting host's root certificates, and InsecureSkipVerify")
-		m.tlsConfig = &tls.Config{InsecureSkipVerify: true}
+		m.tlsConfig = &tls.Config{ InsecureSkipVerify: true }
+		m.tlsConfig.InsecureSkipVerify = useInsecureSkipVerify()
 	} else {
 		m.Info("Trusting root CAs: %v", rootCrtPaths)
 		var err error

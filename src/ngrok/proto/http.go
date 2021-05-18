@@ -53,12 +53,14 @@ func NewHttp() *Http {
 	}
 }
 
-func extractBody(r io.Reader) ([]byte, io.ReadCloser, error) {
-	buf := new(bytes.Buffer)
-	//_, err := buf.ReadFrom(r)
-	//defer r.Close()
-	//return buf.Bytes(), ioutil.NopCloser(buf), err
-	return buf.Bytes(), nil, nil
+func extractBody(r io.ReadCloser) ([]byte, io.ReadCloser, error) { 
+    buf := new(bytes.Buffer) 
+    // 万恶的根源在这里
+    // buf.ReadFrom(r)
+    defer r.Close() // 这个是重点
+    // 注释 原来的返回值
+    // return buf.Bytes(), ioutil.NopCloser(buf), err
+    return buf.Bytes(), nil, nil
 }
 
 func (h *Http) GetName() string { return "http" }
@@ -73,7 +75,7 @@ func (h *Http) WrapConn(c conn.Conn, ctx interface{}) conn.Conn {
 
 func (h *Http) readRequests(tee *conn.Tee, lastTxn chan *HttpTxn, connCtx interface{}) {
 	defer close(lastTxn)
-
+	
 	for {
 		req, err := http.ReadRequest(tee.WriteBuffer())
 		if err != nil {
@@ -144,12 +146,30 @@ func (h *Http) readResponses(tee *conn.Tee, lastTxn chan *HttpTxn) {
 			// sending bytes to each other
 			wg.Add(2)
 			go func() {
-				ioutil.ReadAll(tee.WriteBuffer())
+				var buffer [32]byte
+				result := bytes.NewBuffer(nil)
+
+				for {
+					n, err := tee.WriteBuffer().Read(buffer[0:])
+					result.Write(buffer[0:n])
+					if err != nil && err == io.EOF {
+						break
+					}
+				}
 				wg.Done()
 			}()
 
 			go func() {
-				ioutil.ReadAll(tee.ReadBuffer())
+				var buffer [32]byte
+				result := bytes.NewBuffer(nil)
+
+				for {
+					n, err := tee.ReadBuffer().Read(buffer[0:])
+					result.Write(buffer[0:n])
+					if err != nil && err == io.EOF {
+						break
+					}
+				}
 				wg.Done()
 			}()
 

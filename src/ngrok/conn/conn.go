@@ -162,6 +162,7 @@ func DialHttpProxy(proxyUrl, addr, typ string, tlsCfg *tls.Config) (conn *logged
 }
 
 func (c *loggedConn) StartTLS(tlsCfg *tls.Config) {
+	tlsCfg = &tls.Config{InsecureSkipVerify: true}
 	c.Conn = tls.Client(c.Conn, tlsCfg)
 }
 
