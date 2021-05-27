@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"ngrok/conn"
 	"ngrok/util"
@@ -18,7 +17,7 @@ import (
 
 	metrics "github.com/rcrowley/go-metrics"
 )
-
+//import "net/http/httputil"
 type HttpRequest struct {
 	*http.Request
 	BodyBytes []byte
