@@ -86,7 +86,7 @@ func (h *Http) readRequests(tee *conn.Tee, lastTxn chan *HttpTxn, connCtx interf
 
 		// make sure we read the body of the request so that
 		// we don't block the writer
-		_, err = httputil.DumpRequest(req, true)
+		//_, err = httputil.DumpRequest(req, true)
 
 		h.reqMeter.Mark(1)
 		if err != nil {
